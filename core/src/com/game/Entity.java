@@ -29,6 +29,7 @@ public class Entity{
     private int killCount;
     private int spawnCount;
     private Interaccion currBoss;
+    private MusicManager musicManager;
     private int lives;
     private boolean kill;
     Entity(BalaUpdater balas){
@@ -41,6 +42,7 @@ public class Entity{
         people.add(player);
         rand = new Random();
         score = 0;
+        musicManager = new MusicManager();
     }
     public void run(){
         int counter;
@@ -91,6 +93,7 @@ public class Entity{
         }
     }
     private void testLevel(){
+        musicManager.playMusic(0, 0);
         if(System.currentTimeMillis() > levelMillis + 400 && people.size <= 5 && spawnCount < 15){
             people.add(new Dummy(1000, new Point2D.Double(rand.nextInt(500) + 50, 1), false, 2, 3, balas, people.get(0)));
             spawnCount++;

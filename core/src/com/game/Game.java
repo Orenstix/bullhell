@@ -28,7 +28,6 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
     StringBuffer pointString;
     private NinePatch healthBar;
     private Texture[] bulletSkin;
-    private Texture[][] planeSkin;
     private TextureAtlas planeAtlas;
     private Array<Array<Sprite>> planeSprite;
     private Texture[] special;
