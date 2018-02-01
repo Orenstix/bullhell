@@ -5,6 +5,7 @@
  */
 package com.game.Enemy;
 
+import com.game.MusicManager;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -27,8 +28,9 @@ public class Entidad{
     private volatile boolean life;
     private boolean bounded;
     private int bounds;
+    private MusicManager sound;
     private int point;
-    Entidad(int health, Point2D.Double pos, boolean side, int refImg, double speed, int size, int point){
+    Entidad(MusicManager sound, int health, Point2D.Double pos, boolean side, int refImg, double speed, int size, int point){
         this.point = point;
         this.health = health;
         this.pos = pos;
@@ -41,6 +43,7 @@ public class Entidad{
         this.size = size;
         life = true;
         bounded = false;
+        this.sound = sound;
     }
     public void update(){
         if(health > 0){
@@ -131,5 +134,11 @@ public class Entidad{
 
     public double getSpeedY() {
         return speedY;
+    }
+    public MusicManager getMusicManager(){
+        return sound;
+    }
+    public void setBounded(boolean bounded){
+        this.bounded = bounded;
     }
 }

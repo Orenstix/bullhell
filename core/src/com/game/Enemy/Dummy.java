@@ -11,6 +11,7 @@ import java.awt.geom.Point2D;
 import java.util.Random;
 import com.game.BalaUpdater;
 import com.game.Drop;
+import com.game.MusicManager;
 
 /**
  *
@@ -23,9 +24,9 @@ public class Dummy extends Entidad implements Interaccion{
     private double normalSpeed;
     private int bullCount;
     Interaccion player;
-    public Dummy(int health, Point2D.Double pos, boolean side, int refImg, double speed, BalaUpdater bala,
+    public Dummy(MusicManager sound, int health, Point2D.Double pos, boolean side, int refImg, double speed, BalaUpdater bala,
             Interaccion player){
-        super(health, pos, side, refImg, speed, 20, 100);
+        super(sound, health, pos, side, refImg, speed, 20, 100);
         normalSpeed = speed;
         this.bala = bala;
         shootMillis = System.currentTimeMillis();
@@ -49,6 +50,11 @@ public class Dummy extends Entidad implements Interaccion{
             }
             shootMillis = System.currentTimeMillis();
         }
+        if(!super.life()){
+            bala.createExplosion(super.getPos(), super.getSpeed(), Math.toRadians(90));
+            bala.createDrop(super.getPos().getX(), super.getPos().getY(), Drop.bigPower);
+            super.getMusicManager().playExplosion();
+        }
         if((super.getPos().getX() > 600) || 
                 (super.getPos().getY() > 640) || 
                 (super.getPos().getX() < 0) ||
@@ -59,10 +65,6 @@ public class Dummy extends Entidad implements Interaccion{
             super.setSpeed(.07);
         } else if (super.getPos().getY() > 210){
             super.setSpeed(3);
-        }
-        if(!super.life()){
-            bala.createExplosion(super.getPos(), super.getSpeed(), Math.toRadians(90));
-            bala.createDrop(super.getPos().getX(), super.getPos().getY(), Drop.bigPower);
         }
     }
 

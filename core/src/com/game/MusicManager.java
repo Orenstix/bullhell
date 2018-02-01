@@ -30,6 +30,7 @@ public class MusicManager {
             music.setLooping(true);
         }
         powerUp = Gdx.audio.newSound(Gdx.files.internal("Sounds/PowerUp.wav"));
+        explosion = Gdx.audio.newSound(Gdx.files.internal("Sounds/Explosion.wav"));
     }
     public void changeVolume(float newVolume){
         volume = newVolume;
@@ -46,10 +47,10 @@ public class MusicManager {
         }
     }
     public void playPowerUp(){
-        powerUp.play(volume);
+        powerUp.play(volume / 10);
     }
     public void playExplosion(){
-        //explosion.play(volume);
+        explosion.play(volume / 10);
     }
     public void stopMusic(){
         if(backgroundMusic.get(bgm).isPlaying()){

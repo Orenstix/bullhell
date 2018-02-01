@@ -11,6 +11,7 @@ import java.util.Random;
 import com.game.BalaUpdater;
 import com.game.FastAtan2;
 import com.game.FastTrig;
+import com.game.MusicManager;
 
 /**
  *
@@ -29,9 +30,9 @@ public class BossOren extends Entidad implements Interaccion{
     private int maxHealth;
     private int noShoot;
     private Point2D.Double moveTo;
-    public BossOren(int refImg, double speed, BalaUpdater bala,
+    public BossOren(MusicManager sound, int refImg, double speed, BalaUpdater bala,
             Interaccion player){
-        super(200000, new Point2D.Double(300, 4), false, refImg, speed, 45, 5000);
+        super(sound, 200000, new Point2D.Double(300, 4), false, refImg, speed, 45, 5000);
         normalSpeed = speed;
         this.bala = bala;
         moveTo = new Point2D.Double(super.getPos().getX(), super.getPos().getY());
@@ -48,6 +49,13 @@ public class BossOren extends Entidad implements Interaccion{
     public void update(){
         super.update();
         super.damage(bala.checkDamage(super.getSide(), super.getPos(), super.getSize()));
+        if(!super.life()){
+                super.getMusicManager().playExplosion();
+                bala.createExplosion(super.getPos(), normalSpeed, (int)Math.toDegrees(FastAtan2.atan2(
+                                    (float)(moveTo.getY() - super.getPos().getY()),
+                                    (float)(moveTo.getX() - super.getPos().getX())
+                            )));
+        }
         if(System.currentTimeMillis() > shootMillis + 60){
             if(super.getHealth() > 150000){
                 firstMove();
@@ -263,8 +271,8 @@ public class BossOren extends Entidad implements Interaccion{
         if(noShoot == 0){
             if(wait != 0){
                 if(bullCount % 3 == 0){
-                    for(int x = -10; x < 11; x++){
-                        bala.inicializarBalaTonta(super.getPos(), 0, 10, FastAtan2.atan2((float)(player.getPos().getY() - super.getPos().getY() + 30), (float)(player.getPos().getX() - super.getPos().getX())) + Math.toRadians(x * 9) , 5, super.getSide(), 10
+                    for(int x = -5; x < 5; x++){
+                        bala.inicializarBalaTonta(super.getPos(), 0, 10, FastAtan2.atan2((float)(player.getPos().getY() - super.getPos().getY() + 30), (float)(player.getPos().getX() - super.getPos().getX())) + Math.toRadians(x * 20) , 5, super.getSide(), 10
                         , 0 , 30, false);
                     }
                 }

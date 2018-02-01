@@ -34,15 +34,15 @@ public class Entity{
     private boolean kill;
     Entity(BalaUpdater balas){
         people = new Array<Interaccion>();
+        musicManager = new MusicManager();
         this.balas = balas;
-        lives = 2;
+        lives = 22222222;
         level = 0;
         levelMillis = System.currentTimeMillis();
-        player = new Jugador(new Point2D.Double(300, 500), true, 0, 3, balas);
+        player = new Jugador(musicManager, new Point2D.Double(300, 500), true, 0, 3, balas);
         people.add(player);
         rand = new Random();
         score = 0;
-        musicManager = new MusicManager();
     }
     public void run(){
         int counter;
@@ -56,7 +56,7 @@ public class Entity{
                     if(lives == 0){
                         kill = true;
                     } else {
-                        player = new Jugador(new Point2D.Double(300, 500), true, 0, 3, balas, player.getSpeedX(), player.getSpeedY());
+                        player = new Jugador(musicManager, new Point2D.Double(300, 500), true, 0, 3, balas, player.getSpeedX(), player.getSpeedY());
                         people.add(player);
                         lives--;
                     }
@@ -95,12 +95,12 @@ public class Entity{
     private void testLevel(){
         musicManager.playMusic(0, 0);
         if(System.currentTimeMillis() > levelMillis + 400 && people.size <= 5 && spawnCount < 15){
-            people.add(new Dummy(1000, new Point2D.Double(rand.nextInt(500) + 50, 1), false, 2, 3, balas, people.get(0)));
+            people.add(new Dummy(musicManager, 1000, new Point2D.Double(rand.nextInt(500) + 50, 1), false, 2, 3, balas, people.get(0)));
             spawnCount++;
             levelMillis = System.currentTimeMillis();
         }
         if(killCount >= 13 && currBoss == null){
-            currBoss = new BossOren(1, 3, balas, people.get(0));
+            currBoss = new BossOren(musicManager, 1, 3, balas, people.get(0));
             people.add(currBoss);
         }
         if(currBoss != null && !currBoss.life()){

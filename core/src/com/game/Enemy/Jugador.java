@@ -10,6 +10,7 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.Random;
 import com.game.BalaUpdater;
+import com.game.MusicManager;
 
 /**
  *
@@ -18,7 +19,10 @@ import com.game.BalaUpdater;
 public class Jugador extends Entidad implements Interaccion{
     private BalaUpdater bala;
     private boolean shoot;
+    private boolean soundPower;
+    private boolean soundBomb;
     private long shootMillis;
+    private long ghostTime;
     private Random rand;
     private double normalSpeed;
     private int bullCount;
@@ -26,8 +30,8 @@ public class Jugador extends Entidad implements Interaccion{
     private int power;
     private int pickedPoints;
     private int bombs;
-    public Jugador(Point2D.Double pos, boolean side, int refImg, double speed, BalaUpdater bala){
-        super(1, pos, side, 0, speed, 1, 0);
+    public Jugador(MusicManager sound, Point2D.Double pos, boolean side, int refImg, double speed, BalaUpdater bala){
+        super(sound, 1, pos, side, 0, speed, 1, 0);
         super.bound(25);
         normalSpeed = speed;
         this.bala = bala;
@@ -35,10 +39,11 @@ public class Jugador extends Entidad implements Interaccion{
         slow = false;
         bombs = 3;
         rand = new Random();
+        ghostTime = 0;
     }
 
-    public Jugador(Point2D.Double pos, boolean side, int refImg, double speed, BalaUpdater bala, double speedX, double speedY) {
-        super(1, pos, side, 0, speed, 1, 0);
+    public Jugador(MusicManager sound, Point2D.Double pos, boolean side, int refImg, double speed, BalaUpdater bala, double speedX, double speedY) {
+        super(sound, 1, pos, side, 0, speed, 1, 0);
         super.bound(25);
         normalSpeed = speed;
         this.bala = bala;
@@ -48,6 +53,7 @@ public class Jugador extends Entidad implements Interaccion{
         rand = new Random();
         super.setSpeedX(speedX);
         super.setSpeedY(speedY);
+        ghostTime = 100;
     }
     @Override
     public void update(){
@@ -81,16 +87,23 @@ public class Jugador extends Entidad implements Interaccion{
         } else {
             super.setSpeed(normalSpeed);
         }
-        super.damage(bala.checkDamage(super.getSide(), super.getPos(), super.getSize()));
+        if(ghostTime <= 0){
+            super.damage(bala.checkDamage(super.getSide(), super.getPos(), super.getSize()));
+        } else {
+            ghostTime--;
+        }
         if(super.getHealth() < 0){
             bala.createExplosion(super.getPos(), 0, 0);
         }
-        
     }
     private void pickStuff(){
+        int tempPower = power;
         pickedPoints += bala.getPoints(super.getPos(), super.getSize());
         power += power + bala.getPower(super.getPos(), super.getSize());
         bombs += bombs + bala.getBombas(super.getPos(), super.getSize());
+        if(power != tempPower){
+            super.getMusicManager().playPowerUp();
+        }
     }
     @Override
     public int getSize() {
