@@ -27,6 +27,8 @@ public class BalaUpdater{
     private final int maxBalas = 10000;
     private Random rand;
     private Entity ent;
+    private Bomb bomb;
+    public final int NOTHING = 0;
     BalaUpdater(){
         balas = new Bala[maxBalas];
         for(int x = 0; x < maxBalas; x++){
@@ -39,6 +41,7 @@ public class BalaUpdater{
         this.ent = null;
         cantActiva = 0;
         rand = new Random();
+        bomb = new Bomb();
     }
     public void run(){
         int x;
@@ -65,6 +68,9 @@ public class BalaUpdater{
                 dropPool.free(dropActivo.get(x));
                 dropActivo.removeIndex(x);
             }
+        }
+        if(bomb.isExploding()){
+            bomb.update();
         }
     }
     public void inicializarBalaTonta(Point2D pos, int refImg,
@@ -132,7 +138,9 @@ public class BalaUpdater{
     public void flush(boolean side){
         for(int x = 0; x < maxBalas; x++){
             if(balas[x].getSide() == side){
+                createDrop(balas[x].getPos(), 3);
                 balas[x].kill();
+                
             }
         }
     }
@@ -160,10 +168,12 @@ public class BalaUpdater{
     public int getBombas(Point2D.Double pos, int size){
         int temp = 0;
         for(Drop currDrop: dropActivo){
-            if(currDrop.collision(pos, size)){
-                if(currDrop.getType() == Drop.bomb){
-                    temp++;
-                    currDrop.kill();
+            if(!currDrop.isDead()){
+                if(currDrop.collision(pos, size)){
+                    if(currDrop.getType() == Drop.bomb){
+                        temp++;
+                        currDrop.kill();
+                    }
                 }
             }
         }
@@ -196,5 +206,17 @@ public class BalaUpdater{
             }
         }
         return temp;
+    }
+    public void causeBomb(){
+        bomb.explode();
+    }
+    public float bombAlpha(){
+        if(bomb.getAlpha() == 1f){
+            flush(false);
+        }
+        return bomb.getAlpha();
+    }
+    public boolean flashing(){
+        return bomb.isExploding();
     }
 }

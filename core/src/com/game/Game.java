@@ -16,6 +16,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.Array;
 import java.awt.Color;
 import java.io.IOException;
@@ -24,8 +26,10 @@ import java.util.logging.Logger;
 
 public class Game extends ApplicationAdapter implements InputProcessor, ApplicationListener {
     SpriteBatch batch;
+    ShapeRenderer shape;
     BitmapFont fpsFont;
     StringBuffer pointString;
+    StringBuffer itemString;
     private NinePatch healthBar;
     private Texture[] bulletSkin;
     private TextureAtlas planeAtlas;
@@ -41,12 +45,14 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
     @Override
     public void create () {
         batch = new SpriteBatch();
+        shape = new ShapeRenderer();
         cam = new OrthographicCamera();
         cam.setToOrtho(false, 600, 640);
         pointString = new StringBuffer(30);
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Fonts/airstrike.ttf"));
+        itemString = new StringBuffer(15);
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Fonts/font.ttf"));
         FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-        parameter.size = 15;
+        parameter.size = 16;
         parameter.color = com.badlogic.gdx.graphics.Color.BLACK;
         fpsFont = generator.generateFont(parameter);
         balas = new BalaUpdater();
@@ -85,6 +91,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
         bulletSkin[1] = new Texture("Sprites/Bullets/Shell.png");
         bulletSkin[2] = new Texture("Sprites/Bullets/OldMissile.png");
         bulletSkin[3] = new Texture("Sprites/Bullets/Drop.png");
+        bulletSkin[4] = new Texture("Sprites/Bullets/Nothing.png");
     }
 
     @Override
@@ -103,13 +110,17 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
                     640 - (float)entity.get(x).getPos().getY() - planeSprite.get(entity.get(x).getSprite()).get(entity.get(x).getStatus()).getHeight() / 2);
         }
         for(Drop currDrop: balas.getDrop()){
-            batch.draw(dropSprite.get(currDrop.getType() - 1),
-                    (float)currDrop.getPos().getX() - dropSprite.get(currDrop.getType() - 1).getWidth(),
-                    640 - (float)currDrop.getPos().getY() - dropSprite.get(currDrop.getType() - 1).getHeight());
+            if(!currDrop.isDead()){
+                batch.draw(dropSprite.get(currDrop.getType() - 1),
+                        (float)currDrop.getPos().getX() - dropSprite.get(currDrop.getType() - 1).getWidth(),
+                        640 - (float)currDrop.getPos().getY() - dropSprite.get(currDrop.getType() - 1).getHeight());
+            }
         }
         for(Explosion currExp:balas.getExplosion()){
-            batch.draw(explosionSprite.get(currExp.getState()),
-                    (float)currExp.getPos().getX() - 50, 640 - (float)currExp.getPos().getY() - 50);
+            if(!currExp.isDead()){
+                batch.draw(explosionSprite.get(currExp.getState()),
+                        (float)currExp.getPos().getX() - 50, 640 - (float)currExp.getPos().getY() - 50);
+            }
         }
         for(int x = 0; x < balas.length(); x++){
             batch.draw(bulletSkin[balas.skin(x)]
@@ -143,9 +154,26 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
         pointString.delete(0, pointString.length());
         pointString.append(entity.getScore());
         pointString.append(" points");
+        
+        itemString.delete(0, itemString.length());
+        itemString.append("L: ");
+        itemString.append(entity.getLives());
+        itemString.append(" B: ");
+        itemString.append(entity.getPlayer().getBombs());
+        
         fpsFont.draw(batch, pointString.toString(), 14, 630);
         fpsFont.draw(batch, Gdx.graphics.getFramesPerSecond() + " fps", 540, 17); //FPS Counter
+        fpsFont.draw(batch, itemString, 16, 16);
         batch.end();
+        if(balas.flashing()){
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            shape.begin(ShapeType.Filled);
+            shape.setColor(255, 255, 255, balas.bombAlpha());
+            shape.rect(0, 0, 600, 640);
+            shape.end();
+            Gdx.gl.glDisable(GL20.GL_BLEND);
+        }
     }
 
     @Override
@@ -174,6 +202,9 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
         }
         if(keyCode == Keys.Z){
             entity.getPlayer().shoot();
+        }
+        if(keyCode == Keys.X){
+            entity.getPlayer().bomb();
         }
         return true;
     }

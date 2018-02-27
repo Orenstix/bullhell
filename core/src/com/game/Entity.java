@@ -63,7 +63,7 @@ public class Entity{
                 }
                 killCount++;
             }
-            score += player.getPoints();
+            score += player.pickedUpPoints();
             levelCheck();
         }
     }
@@ -123,5 +123,8 @@ public class Entity{
     }
     public boolean playing(){
         return !kill;
+    }
+    public int getLives(){
+        return lives;
     }
 }

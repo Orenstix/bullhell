@@ -52,7 +52,7 @@ public class Dummy extends Entidad implements Interaccion{
         }
         if(!super.life()){
             bala.createExplosion(super.getPos(), super.getSpeed(), Math.toRadians(90));
-            bala.createDrop(super.getPos().getX(), super.getPos().getY(), Drop.bigPower);
+            bala.createDrop(super.getPos().getX(), super.getPos().getY(), Drop.power);
             super.getMusicManager().playExplosion();
         }
         if((super.getPos().getX() > 600) || 

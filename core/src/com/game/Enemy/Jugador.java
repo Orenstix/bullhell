@@ -30,6 +30,7 @@ public class Jugador extends Entidad implements Interaccion{
     private int power;
     private int pickedPoints;
     private int bombs;
+    private int bombTimeout;
     public Jugador(MusicManager sound, Point2D.Double pos, boolean side, int refImg, double speed, BalaUpdater bala){
         super(sound, 1, pos, side, 0, speed, 1, 0);
         super.bound(25);
@@ -40,6 +41,7 @@ public class Jugador extends Entidad implements Interaccion{
         bombs = 3;
         rand = new Random();
         ghostTime = 0;
+        bombTimeout = 0;
     }
 
     public Jugador(MusicManager sound, Point2D.Double pos, boolean side, int refImg, double speed, BalaUpdater bala, double speedX, double speedY) {
@@ -54,6 +56,7 @@ public class Jugador extends Entidad implements Interaccion{
         super.setSpeedX(speedX);
         super.setSpeedY(speedY);
         ghostTime = 100;
+        bombTimeout = 0;
     }
     @Override
     public void update(){
@@ -94,15 +97,27 @@ public class Jugador extends Entidad implements Interaccion{
         }
         if(super.getHealth() < 0){
             bala.createExplosion(super.getPos(), 0, 0);
+            bala.flush(!super.getSide());
+        }
+        if(bombTimeout > 0){
+            bombTimeout--;
         }
     }
     private void pickStuff(){
         int tempPower = power;
+        int tempPoints = pickedPoints;
+        int tempBombs = bombs;
         pickedPoints += bala.getPoints(super.getPos(), super.getSize());
-        power += power + bala.getPower(super.getPos(), super.getSize());
-        bombs += bombs + bala.getBombas(super.getPos(), super.getSize());
-        if(power != tempPower){
+        power += bala.getPower(super.getPos(), super.getSize());
+        bombs += bala.getBombas(super.getPos(), super.getSize());
+        if(power > tempPower){
             super.getMusicManager().playPowerUp();
+        }
+        if(pickedPoints > tempPoints){
+            super.getMusicManager().playGetPoint();
+        }
+        if(bombs > tempBombs){
+            super.getMusicManager().playBomb();
         }
     }
     @Override
@@ -149,5 +164,24 @@ public class Jugador extends Entidad implements Interaccion{
         int temp = pickedPoints;
         pickedPoints = 0;
         return temp;
+    }
+    public int getBombs(){
+        return bombs;
+    }
+    public void bomb() {
+        if(bombTimeout == 0){
+            if(bombs > 0){
+                for(int x = 0; x < 50; x++){
+                    bala.inicializarBalaHoming(super.getPos(), 2,
+                    Math.toRadians(rand.nextInt(360)), 15, 5,
+                    0.1, super.getSide(), 420, (rand.nextInt(5) - 3) * 50, (rand.nextInt(5) - 3) * 50, false);
+                }
+                super.getMusicManager().playBomb();
+                bala.causeBomb();
+                ghostTime = 15;
+                bombTimeout = 100;
+                bombs--;
+            }
+        }
     }
 }

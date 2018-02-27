@@ -21,9 +21,9 @@ public class FastTrig {
         }
     }
     static public double cos(int x){
-        return COS[(x + 360) % 360];
+        return COS[(x + 360 * 2) % 360];
     }
     static public double sin(int x){
-        return SIN[(x + 360) % 360];
+        return SIN[(x + 360 * 2) % 360];
     }
 }

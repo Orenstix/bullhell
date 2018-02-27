@@ -20,6 +20,8 @@ public class MusicManager {
     private Array<Music> backgroundMusic;
     private Sound explosion;
     private Sound powerUp;
+    private Sound point;
+    private final Sound bomb;
     public MusicManager(){
         bgm = 0;
         backgroundMusic = new Array<Music>();
@@ -31,6 +33,8 @@ public class MusicManager {
         }
         powerUp = Gdx.audio.newSound(Gdx.files.internal("Sounds/PowerUp.wav"));
         explosion = Gdx.audio.newSound(Gdx.files.internal("Sounds/Explosion.wav"));
+        point = Gdx.audio.newSound(Gdx.files.internal("Sounds/Point.wav"));
+        bomb = Gdx.audio.newSound(Gdx.files.internal("Sounds/Bomb.wav"));
     }
     public void changeVolume(float newVolume){
         volume = newVolume;
@@ -51,6 +55,12 @@ public class MusicManager {
     }
     public void playExplosion(){
         explosion.play(volume / 10);
+    }
+    public void playGetPoint(){
+        point.play(volume / 4);
+    }
+    public void playBomb(){
+        bomb.play(volume / 2);
     }
     public void stopMusic(){
         if(backgroundMusic.get(bgm).isPlaying()){
