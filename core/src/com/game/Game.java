@@ -31,7 +31,8 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
     StringBuffer pointString;
     StringBuffer itemString;
     private NinePatch healthBar;
-    private Texture[] bulletSkin;
+    private TextureAtlas bulletAtlas;
+    private Array<Sprite> bulletSprite;
     private TextureAtlas planeAtlas;
     private Array<Array<Sprite>> planeSprite;
     private Texture[] special;
@@ -86,12 +87,14 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
 
     }
     private void createBullets() throws IOException {
-        bulletSkin = new Texture[100];
-        bulletSkin[0] = new Texture("Sprites/Bullets/pellet.png");
-        bulletSkin[1] = new Texture("Sprites/Bullets/Shell.png");
-        bulletSkin[2] = new Texture("Sprites/Bullets/OldMissile.png");
-        bulletSkin[3] = new Texture("Sprites/Bullets/Drop.png");
-        bulletSkin[4] = new Texture("Sprites/Bullets/Nothing.png");
+        bulletAtlas = new TextureAtlas(Gdx.files.internal("Sprites/Bullets/bullets.pack"));
+        bulletSprite = new Array<Sprite>();
+        //bulletSprite = bulletAtlas.createSprites();
+        bulletSprite.add(bulletAtlas.createSprite("pellet"));
+        bulletSprite.add(bulletAtlas.createSprite("Shell"));
+        bulletSprite.add(bulletAtlas.createSprite("OldMissile"));
+        bulletSprite.add(bulletAtlas.createSprite("Drop"));
+        bulletSprite.add(bulletAtlas.createSprite("Nothing"));
     }
 
     @Override
@@ -123,21 +126,16 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
             }
         }
         for(int x = 0; x < balas.length(); x++){
-            batch.draw(bulletSkin[balas.skin(x)]
-                    , (float)balas.location(x).getX() - bulletSkin[balas.skin(x)].getWidth() / 2
-                    , 640 - (float)balas.location(x).getY() - bulletSkin[balas.skin(x)].getHeight() / 2
-                    , bulletSkin[balas.skin(x)].getWidth() / 2
-                    , bulletSkin[balas.skin(x)].getHeight() / 2
-                    , bulletSkin[balas.skin(x)].getWidth()
-                    , bulletSkin[balas.skin(x)].getHeight()
+            batch.draw(bulletSprite.get(balas.skin(x)),
+                    (float)balas.location(x).getX() - bulletSprite.get(balas.skin(x)).getWidth() / 2,
+                    640 - (float)balas.location(x).getY() - bulletSprite.get(balas.skin(x)).getHeight() / 2
+                    , bulletSprite.get(balas.skin(x)).getWidth() / 2
+                    , bulletSprite.get(balas.skin(x)).getHeight() / 2
+                    , bulletSprite.get(balas.skin(x)).getWidth()
+                    , bulletSprite.get(balas.skin(x)).getHeight()
                     , 1
                     , 1
                     , balas.angle(x)
-                    , 0
-                    , 0
-                    , bulletSkin[balas.skin(x)].getWidth()
-                    , bulletSkin[balas.skin(x)].getHeight()
-                    , false
                     , false);
         }
         

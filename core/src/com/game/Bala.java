@@ -184,7 +184,7 @@ public class Bala {
     }
     public int getDir(){
         if(!spin){
-            return (int)(-Math.toDegrees(direction) + 360) % 360;
+            return (int)(-Math.toDegrees(direction) + 270) % 360;
         } else {
             return (int)currSpin % 360;
         }
