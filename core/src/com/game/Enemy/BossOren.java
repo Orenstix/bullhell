@@ -307,7 +307,7 @@ public class BossOren extends Entidad implements Interaccion{
         if(noShoot == 0){
             if(bullCount % 9 == 0 || wait < 20 && bullCount % 3 == 0){
                 for(int x = 0; x < 360; x += 5){
-                    bala.inicializarBalaTonta(super.getPos(), 1, 1, Math.toRadians(x) , 4, super.getSide(), 10
+                    bala.inicializarBalaTonta(super.getPos(), 5, 1, Math.toRadians(x) , 4, super.getSide(), 10
                     , rand.nextInt(40) - 20 , rand.nextInt(40) - 20, true);
                 }
             }

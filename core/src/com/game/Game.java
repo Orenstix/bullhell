@@ -21,6 +21,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.Array;
 import java.awt.Color;
 import java.io.IOException;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +31,8 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
     BitmapFont fpsFont;
     StringBuffer pointString;
     StringBuffer itemString;
+    private double scroll;
+    private Texture seaBackground;
     private NinePatch healthBar;
     private TextureAtlas bulletAtlas;
     private Array<Sprite> bulletSprite;
@@ -54,7 +57,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Fonts/font.ttf"));
         FreeTypeFontParameter parameter = new FreeTypeFontParameter();
         parameter.size = 16;
-        parameter.color = com.badlogic.gdx.graphics.Color.BLACK;
+        parameter.color = com.badlogic.gdx.graphics.Color.WHITE;
         fpsFont = generator.generateFont(parameter);
         balas = new BalaUpdater();
         entity = new Entity(balas);
@@ -77,6 +80,9 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
         special[0] = new Texture("Sprites/Special/Focus.png");
         drop = new TextureAtlas(Gdx.files.internal("Sprites/Special/drops.pack"));
         dropSprite = drop.createSprites("drop");
+        seaBackground = new Texture("Sprites/Background/Sea.png");
+        seaBackground.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        scroll = new Random().nextInt(640);
     }
     private void createPlanes() throws IOException{       
         planeAtlas = new TextureAtlas(Gdx.files.internal("Sprites/Vehicle/Vehicle.pack"));
@@ -95,6 +101,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
         bulletSprite.add(bulletAtlas.createSprite("OldMissile"));
         bulletSprite.add(bulletAtlas.createSprite("Drop"));
         bulletSprite.add(bulletAtlas.createSprite("Nothing"));
+        bulletSprite.add(bulletAtlas.createSprite("Pebble"));
     }
 
     @Override
@@ -107,6 +114,11 @@ public class Game extends ApplicationAdapter implements InputProcessor, Applicat
         entity.run();
         balas.run();
         batch.begin();
+        scroll += 5;
+        if(scroll > 640){
+            scroll = scroll % 640;
+        }
+        batch.draw(seaBackground, 0, 0, 0, 640 - (int)scroll, seaBackground.getWidth(), seaBackground.getHeight());
         for(int x = 0; x < entity.size(); x++){
             batch.draw(planeSprite.get(entity.get(x).getSprite()).get(entity.get(x).getStatus()),
                     (float)entity.get(x).getPos().getX() - planeSprite.get(entity.get(x).getSprite()).get(entity.get(x).getStatus()).getWidth() / 2,

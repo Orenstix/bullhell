@@ -138,9 +138,10 @@ public class BalaUpdater{
     public void flush(boolean side){
         for(int x = 0; x < maxBalas; x++){
             if(balas[x].getSide() == side){
-                createDrop(balas[x].getPos(), 3);
+                if(balas[x].active()){
+                    createDrop(balas[x].getPos(), 3);
+                }
                 balas[x].kill();
-                
             }
         }
     }
